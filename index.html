@@ -128,6 +128,26 @@
         .faci-fab { position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 9px 18px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; z-index: 100; transition: all 0.2s; font-family: inherit; }
         .faci-fab:hover { border-color: var(--primary); color: var(--primary); }
         @media (max-width: 360px) { .container{padding:16px 16px 48px} h1{font-size:20px} .q-bubble{font-size:15px} }
+
+        /* ── Facilitator new design ── */
+        .metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; }
+        .metric-val { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+        .donut-row { display: flex; gap: 20px; justify-content: space-around; flex-wrap: wrap; padding: 8px 0; }
+        .donut-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .donut-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+        .donut-legend { display: flex; gap: 10px; font-size: 10px; }
+        .dl-yes { color: var(--yes); font-weight: 700; }
+        .dl-no  { color: var(--no);  font-weight: 700; }
+        .wordcloud-wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding: 8px 0; min-height: 60px; }
+        .wc-word { color: var(--text); font-weight: 700; line-height: 1.4; cursor: default; }
+        .type-dist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 4px; }
+        .type-dist-item { background: var(--primary-bg); border: 1px solid rgba(129,140,248,0.2); border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+        .type-dist-name { font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.35; }
+        .type-dist-count { font-size: 16px; font-weight: 800; color: var(--primary); white-space: nowrap; }
+        .pc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .pc-grid .participant-card { margin-bottom: 0; }
     </style>
 </head>
 <body>
@@ -229,93 +249,96 @@
             <span style="color:var(--muted)">참여자에게 공유할 때: <code style="font-size:11px">파일주소?bin=<span id="faci-bin-id2"></span></code></span>
         </div>
 
-        <!-- 동아리 집계 -->
-        <div class="card mt-20" id="faci-club-section" style="display:none">
-            <div class="section-lbl">🎯 동아리 팀원 집계</div>
-            <div class="q-result">
-                <div class="q-result-txt">활동하면서 처음 계획과 달라진 부분이 있었다</div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--yes)">네</div>
-                    <div class="bar-track"><div class="bar-fill yes" id="c1y" style="width:0%">—</div></div>
-                    <div class="bar-count" id="c1yn">0명</div>
-                </div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--no)">아니</div>
-                    <div class="bar-track"><div class="bar-fill no" id="c1n" style="width:0%">—</div></div>
-                    <div class="bar-count" id="c1nn">0명</div>
-                </div>
-                <span class="ctag" id="c1tag"></span>
+        <!-- 메트릭 카드 -->
+        <div class="metric-row mt-20">
+            <div class="metric-card">
+                <div class="metric-val" id="m-total">0</div>
+                <div class="metric-lbl">총 참여</div>
             </div>
-            <div class="q-result" style="margin-bottom:0">
-                <div class="q-result-txt">오늘 다른 팀과 나눌 수 있는 팁·경험이 있다</div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--yes)">네</div>
-                    <div class="bar-track"><div class="bar-fill yes" id="c2y" style="width:0%">—</div></div>
-                    <div class="bar-count" id="c2yn">0명</div>
-                </div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--no)">아니</div>
-                    <div class="bar-track"><div class="bar-fill no" id="c2n" style="width:0%">—</div></div>
-                    <div class="bar-count" id="c2nn">0명</div>
-                </div>
-                <span class="ctag" id="c2tag"></span>
+            <div class="metric-card">
+                <div class="metric-val" id="m-club">0</div>
+                <div class="metric-lbl">동아리</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="m-crew">0</div>
+                <div class="metric-lbl">서포터즈</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="m-types">0</div>
+                <div class="metric-lbl">유형 수</div>
             </div>
         </div>
 
-        <!-- 서포터즈 집계 -->
+        <!-- 도넛 차트 — 동아리 -->
+        <div class="card mt-16" id="faci-club-section" style="display:none">
+            <div class="section-lbl">🎯 동아리 Yes / No</div>
+            <div class="donut-row">
+                <div class="donut-item">
+                    <canvas id="c-donut-c1" width="90" height="90"></canvas>
+                    <div class="donut-lbl">계획 변경</div>
+                    <div class="donut-legend"><span class="dl-yes" id="dl-c1-yes">—</span><span class="dl-no" id="dl-c1-no">—</span></div>
+                </div>
+                <div class="donut-item">
+                    <canvas id="c-donut-c2" width="90" height="90"></canvas>
+                    <div class="donut-lbl">공유할 팁</div>
+                    <div class="donut-legend"><span class="dl-yes" id="dl-c2-yes">—</span><span class="dl-no" id="dl-c2-no">—</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 도넛 차트 — 서포터즈 -->
         <div class="card mt-12" id="faci-crew-section" style="display:none">
-            <div class="section-lbl">📸 서포터즈 집계</div>
-            <div class="q-result">
-                <div class="q-result-txt">담당 동아리 활동이 계획대로 진행되고 있다</div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--yes)">네</div>
-                    <div class="bar-track"><div class="bar-fill yes" id="r1y" style="width:0%">—</div></div>
-                    <div class="bar-count" id="r1yn">0명</div>
+            <div class="section-lbl">📸 서포터즈 Yes / No</div>
+            <div class="donut-row">
+                <div class="donut-item">
+                    <canvas id="c-donut-r1" width="90" height="90"></canvas>
+                    <div class="donut-lbl">활동 순항</div>
+                    <div class="donut-legend"><span class="dl-yes" id="dl-r1-yes">—</span><span class="dl-no" id="dl-r1-no">—</span></div>
                 </div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--no)">아니</div>
-                    <div class="bar-track"><div class="bar-fill no" id="r1n" style="width:0%">—</div></div>
-                    <div class="bar-count" id="r1nn">0명</div>
+                <div class="donut-item">
+                    <canvas id="c-donut-r2" width="90" height="90"></canvas>
+                    <div class="donut-lbl">기록 목표</div>
+                    <div class="donut-legend"><span class="dl-yes" id="dl-r2-yes">—</span><span class="dl-no" id="dl-r2-no">—</span></div>
                 </div>
-                <span class="ctag" id="r1tag"></span>
-            </div>
-            <div class="q-result" style="margin-bottom:0">
-                <div class="q-result-txt">오늘 기록하고 싶은 순간이 구체적으로 있다</div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--yes)">네</div>
-                    <div class="bar-track"><div class="bar-fill yes" id="r2y" style="width:0%">—</div></div>
-                    <div class="bar-count" id="r2yn">0명</div>
-                </div>
-                <div class="bar-row">
-                    <div class="bar-side" style="color:var(--no)">아니</div>
-                    <div class="bar-track"><div class="bar-fill no" id="r2n" style="width:0%">—</div></div>
-                    <div class="bar-count" id="r2nn">0명</div>
-                </div>
-                <span class="ctag" id="r2tag"></span>
             </div>
         </div>
 
-        <!-- 주관식 응답 모음 -->
+        <!-- 워드 클라우드 (동아리 Q3 한 문장 소개) -->
         <div class="card mt-16">
-            <div class="section-lbl">💬 주관식 응답</div>
-            <div id="faci-open-q3" style="margin-bottom:16px">
-                <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px">동아리 — 우리 팀 한 문장 소개</div>
-                <p class="muted" style="font-size:13px" id="faci-q3-empty">아직 응답이 없어요.</p>
+            <div class="section-lbl">💬 한 문장 소개 워드클라우드</div>
+            <div id="faci-wordcloud" class="wordcloud-wrap">
+                <p class="muted" style="font-size:13px">아직 응답이 없어요.</p>
             </div>
-            <div id="faci-open-q4" style="margin-bottom:16px">
-                <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px">동아리 — 오늘 꼭 얻고 싶은 것</div>
+        </div>
+
+        <!-- 오늘 꼭 얻고 싶은 것 (동아리 Q4) -->
+        <div class="card mt-16">
+            <div class="section-lbl">🎯 오늘 꼭 얻고 싶은 것 (동아리)</div>
+            <div id="faci-open-q4">
                 <p class="muted" style="font-size:13px" id="faci-q4-empty">아직 응답이 없어요.</p>
             </div>
+        </div>
+
+        <!-- 인상 깊었던 순간 (서포터즈 Q3) -->
+        <div class="card mt-12" id="faci-crew-open-section" style="display:none">
+            <div class="section-lbl">✨ 인상 깊었던 순간 (서포터즈)</div>
             <div id="faci-open-r3">
-                <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px">서포터즈 — 인상 깊었던 순간</div>
                 <p class="muted" style="font-size:13px" id="faci-r3-empty">아직 응답이 없어요.</p>
             </div>
         </div>
 
-        <!-- AI 대화 결과 -->
+        <!-- 유형 분포 그리드 -->
+        <div class="card mt-16">
+            <div class="section-lbl">🧠 참여자 유형 분포</div>
+            <div id="faci-type-grid" class="type-dist-grid">
+                <p class="muted" style="font-size:13px">아직 응답이 없어요.</p>
+            </div>
+        </div>
+
+        <!-- AI 대화 결과 카드 (2열) -->
         <div class="card mt-16">
             <div class="section-lbl">✨ AI 개인화 대화 결과</div>
-            <div id="faci-participants">
+            <div id="faci-participants" class="pc-grid">
                 <p class="muted" style="font-size:13px">아직 완료한 참여자가 없어요.</p>
             </div>
         </div>
@@ -735,6 +758,8 @@ async function buildSummary(data) {
 }
 
 // ─── Facilitator ──────────────────────────────────────────────────────────
+const _donutInstances = {};
+
 function renderFaci() {
     const n = accumulated.length;
     document.getElementById('faci-count').textContent = `${n}명 완료`;
@@ -750,67 +775,151 @@ function renderFaci() {
     const clubs = accumulated.filter(r => r.role !== 'crew');
     const crews = accumulated.filter(r => r.role === 'crew');
 
-    // 집계 섹션 표시 여부
+    // 메트릭 카드
+    document.getElementById('m-total').textContent = n;
+    document.getElementById('m-club').textContent = clubs.length;
+    document.getElementById('m-crew').textContent = crews.length;
+    const typeSet = new Set(accumulated.map(r => r.type).filter(Boolean));
+    document.getElementById('m-types').textContent = typeSet.size;
+
+    // 섹션 표시 여부
     document.getElementById('faci-club-section').style.display = clubs.length ? 'block' : 'none';
     document.getElementById('faci-crew-section').style.display = crews.length ? 'block' : 'none';
+    const crewOpenSec = document.getElementById('faci-crew-open-section');
+    if (crewOpenSec) crewOpenSec.style.display = crews.length ? 'block' : 'none';
 
-    // 동아리 바 집계
-    renderBar('c1', clubs, 'q1');
-    renderBar('c2', clubs, 'q2');
+    // 도넛 차트
+    renderDonut('c-donut-c1', 'dl-c1', clubs, 'q1');
+    renderDonut('c-donut-c2', 'dl-c2', clubs, 'q2');
+    renderDonut('c-donut-r1', 'dl-r1', crews, 'q1');
+    renderDonut('c-donut-r2', 'dl-r2', crews, 'q2');
 
-    // 서포터즈 바 집계
-    renderBar('r1', crews, 'q1');
-    renderBar('r2', crews, 'q2');
+    // 워드 클라우드 (동아리 Q3 한 문장 소개)
+    const wc = document.getElementById('faci-wordcloud');
+    const q3texts = clubs.filter(r => r.fixed?.q3).map(r => r.fixed.q3);
+    if (q3texts.length) {
+        const words = buildWordFreq(q3texts);
+        const vals = Object.values(words);
+        const max = vals.length ? Math.max(...vals) : 1;
+        wc.innerHTML = Object.entries(words)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 35)
+            .map(([w, c]) => {
+                const sz = Math.round(11 + (c / max) * 20);
+                const op = (0.45 + (c / max) * 0.55).toFixed(2);
+                return `<span class="wc-word" style="font-size:${sz}px;opacity:${op}">${w}</span>`;
+            }).join('');
+    } else {
+        wc.innerHTML = `<p class="muted" style="font-size:13px">아직 응답이 없어요.</p>`;
+    }
 
-    // 주관식 응답
-    renderOpen('faci-open-q3', 'faci-q3-empty', clubs, 'q3');
-    renderOpen('faci-open-q4', 'faci-q4-empty', clubs, 'q4');
-    renderOpen('faci-open-r3', 'faci-r3-empty', crews, 'q3');
+    // 주관식 카드
+    renderOpenCards('faci-open-q4', 'faci-q4-empty', clubs, 'q4');
+    renderOpenCards('faci-open-r3', 'faci-r3-empty', crews, 'q3');
 
-    // AI 결과 카드
+    // 유형 분포 그리드
+    const typeGrid = document.getElementById('faci-type-grid');
+    if (accumulated.length) {
+        const typeCounts = {};
+        accumulated.forEach(r => { if (r.type) typeCounts[r.type] = (typeCounts[r.type] || 0) + 1; });
+        typeGrid.innerHTML = Object.entries(typeCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([t, c]) => `
+                <div class="type-dist-item">
+                    <span class="type-dist-name">${t}</span>
+                    <span class="type-dist-count">${c}명</span>
+                </div>`).join('');
+    } else {
+        typeGrid.innerHTML = `<p class="muted" style="font-size:13px">아직 응답이 없어요.</p>`;
+    }
+
+    // AI 개인화 결과 카드 (2열 grid)
     const container = document.getElementById('faci-participants');
-    if (n === 0) { container.innerHTML = `<p class="muted" style="font-size:13px">아직 완료한 참여자가 없어요.</p>`; return; }
+    if (n === 0) {
+        container.innerHTML = `<p class="muted" style="font-size:13px">아직 완료한 참여자가 없어요.</p>`;
+        return;
+    }
     container.innerHTML = accumulated.map(r => `
         <div class="participant-card">
             <div class="pc-header">
-                <div class="pc-name">👤 ${r.name}<span style="font-size:11px;color:var(--muted);font-weight:400">${r.role==='crew'?' (서포터즈)':''}</span></div>
-                <div class="pc-type">${r.type}</div>
+                <div class="pc-name">👤 ${r.name}<span style="font-size:10px;color:var(--muted);font-weight:400">${r.role === 'crew' ? ' (서포터즈)' : ''}</span></div>
+                <div class="pc-type" style="font-size:11px">${r.type || ''}</div>
             </div>
-            <div class="pc-points">${r.points.map(p=>`<div class="pc-point">${p}</div>`).join('')}</div>
+            <div class="pc-points">${(r.points || []).map(p => `<div class="pc-point">${p}</div>`).join('')}</div>
             ${r.tip ? `<div class="pc-tip">💡 ${r.tip}</div>` : ''}
         </div>`).join('');
 }
 
-function renderBar(prefix, list, key) {
-    const y = list.filter(r => r.fixed?.[key] === 'yes').length;
+function renderDonut(canvasId, legendPrefix, list, key) {
+    const y  = list.filter(r => r.fixed?.[key] === 'yes').length;
     const no = list.filter(r => r.fixed?.[key] === 'no').length;
-    const t = y + no;
-    if (t === 0) return;
-    const yp = Math.round(y/t*100), np = 100-yp;
-    document.getElementById(prefix+'y').style.width = yp+'%';
-    document.getElementById(prefix+'y').textContent = yp+'%';
-    document.getElementById(prefix+'n').style.width = np+'%';
-    document.getElementById(prefix+'n').textContent = np+'%';
-    document.getElementById(prefix+'yn').textContent = y+'명';
-    document.getElementById(prefix+'nn').textContent = no+'명';
-    const tag = document.getElementById(prefix+'tag');
-    if (yp >= 70)      { tag.textContent = '✓ 네 우세';    tag.className = 'ctag agree'; }
-    else if (yp <= 30) { tag.textContent = '✓ 아니요 우세'; tag.className = 'ctag concern'; }
-    else               { tag.textContent = '⚡ 의견 분기';  tag.className = 'ctag split'; }
+    const total = y + no;
+    const yEl  = document.getElementById(legendPrefix + '-yes');
+    const noEl = document.getElementById(legendPrefix + '-no');
+    if (yEl)  yEl.textContent  = `네 ${y}명`;
+    if (noEl) noEl.textContent = `아니 ${no}명`;
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || total === 0) return;
+    if (_donutInstances[canvasId]) { _donutInstances[canvasId].destroy(); }
+    _donutInstances[canvasId] = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['네', '아니요'],
+            datasets: [{
+                data: [y, no],
+                backgroundColor: ['rgba(52,211,153,0.75)', 'rgba(248,113,113,0.75)'],
+                borderColor:     ['rgba(52,211,153,1)',    'rgba(248,113,113,1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            cutout: '62%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` ${ctx.label}: ${ctx.raw}명 (${Math.round(ctx.raw / total * 100)}%)`
+                    }
+                }
+            }
+        }
+    });
 }
 
-function renderOpen(containerId, emptyId, list, key) {
+function buildWordFreq(texts) {
+    const stop = new Set(['이','가','을','를','은','는','의','에','도','로','와','과','그','저','우리','제','내','있','있어요','있는','수','것','좀','다','더','한','합니다','해요','했어요','하고','하는','하면','이야기','얘기','생각','같아요','좋겠어요','싶어요','같은','그리고','에서','으로','들이','하다','이다']);
+    const freq = {};
+    texts.join(' ').split(/[\s,!?.~"'·]+/).forEach(w => {
+        w = w.trim();
+        if (w.length < 2 || stop.has(w)) return;
+        freq[w] = (freq[w] || 0) + 1;
+    });
+    return freq;
+}
+
+function renderOpenCards(containerId, emptyId, list, key) {
     const answers = list.filter(r => r.fixed?.[key]);
-    if (!answers.length) return;
-    document.getElementById(emptyId).style.display = 'none';
-    const html = answers.map(r =>
-        `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:7px;line-height:1.5">"${r.fixed[key]}" <span style="color:var(--muted);font-size:11px">— ${r.name}</span></div>`
-    ).join('');
-    document.getElementById(containerId).insertAdjacentHTML('beforeend', html);
+    const emptyEl = document.getElementById(emptyId);
+    const cont = document.getElementById(containerId);
+    if (!cont) return;
+    // 기존 카드 제거 후 재렌더
+    cont.querySelectorAll('.open-card').forEach(e => e.remove());
+    if (!answers.length) {
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    cont.insertAdjacentHTML('beforeend',
+        answers.map(r =>
+            `<div class="open-card" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:7px;line-height:1.5">"${r.fixed[key]}" <span style="color:var(--muted);font-size:11px">— ${r.name}</span></div>`
+        ).join('')
+    );
 }
 
 // URL param
 if (new URLSearchParams(location.search).get('mode') === 'faci') { renderFaci(); show('s-faci'); }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </body>
 </html>
