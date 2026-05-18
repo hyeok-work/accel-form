@@ -371,7 +371,8 @@
 
 <script>
 // ─── Config ───────────────────────────────────────────────────────────────
-const API_KEY = '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';const MODEL   = 'llama-3.3-70b-versatile';
+const API_KEY = new URLSearchParams(location.search).get('groq') || '';
+const MODEL   = 'llama-3.3-70b-versatile';
 const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MAX_AI_TURNS = 4;
 
@@ -612,7 +613,6 @@ function ansFixed(val) { fixedAnswers[FIXED_Q[fixedIdx].id] = val; nextFixed(); 
 function ansFixedOpen() {
     const val = document.getElementById('open-ta').value.trim();
     if (!val) { document.getElementById('open-ta').focus(); return; }
-    if (fixedIdx >= FIXED_Q.length) return;
     fixedAnswers[FIXED_Q[fixedIdx].id] = val;
     nextFixed();
 }
