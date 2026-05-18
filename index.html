@@ -604,6 +604,7 @@ function renderFixed() {
         ta.value = ''; ta.disabled = false;
         ta.placeholder = q.placeholder || '자유롭게 적어주세요';
         document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').onclick = submitAnswer; // ← 버그 수정: AI 단계에서 올바른 핸들러로 리셋
         document.getElementById('submit-btn').onclick = ansFixedOpen;
         document.getElementById('q-open').style.display = 'block';
         setTimeout(() => ta.focus(), 200);
@@ -707,6 +708,7 @@ function showAIQuestion(text) {
     const ta = document.getElementById('open-ta');
     ta.value = ''; ta.disabled = false; ta.placeholder = '자유롭게 답해주세요...';
     document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').onclick = submitAnswer; // ← 버그 수정: AI 단계에서 올바른 핸들러로 리셋
     document.getElementById('q-open').style.display = 'block';
     updateProgress(FIXED_Q.length + aiTurnCount + 1, FIXED_Q.length + MAX_AI_TURNS);
     setTimeout(() => ta.focus(), 200);
