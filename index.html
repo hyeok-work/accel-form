@@ -613,6 +613,7 @@ function ansFixed(val) { fixedAnswers[FIXED_Q[fixedIdx].id] = val; nextFixed(); 
 function ansFixedOpen() {
     const val = document.getElementById('open-ta').value.trim();
     if (!val) { document.getElementById('open-ta').focus(); return; }
+    if (fixedIdx >= FIXED_Q.length) return;
     fixedAnswers[FIXED_Q[fixedIdx].id] = val;
     nextFixed();
 }
